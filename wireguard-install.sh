@@ -63,7 +63,7 @@ read -rp "Server's WireGuard IPv4 " -e -i "$SERVER_WG_IPV4" SERVER_WG_IPV4
 SERVER_WG_IPV6="fd42:42:42::1"
 read -rp "Server's WireGuard IPv6 " -e -i "$SERVER_WG_IPV6" SERVER_WG_IPV6
 
-SERVER_PORT=1194
+SERVER_PORT=51821
 read -rp "Server's WireGuard port " -e -i "$SERVER_PORT" SERVER_PORT
 
 # 1st client
@@ -148,16 +148,22 @@ read -rp "Client 10 WireGuard IPv6 " -e -i "$CLIENT_WG_IPV6_10" CLIENT_WG_IPV6_1
 
 # Adguard DNS by default
 # 176.103.130.130
+# Cloudflare
+# 1.1.1.1
 CLIENT_DNS1="176.103.130.130"
+#CLIENT_DNS1="1.1.1.1"
 read -rp "First DNS resolver to use for the client: " -e -i "$CLIENT_DNS1" CLIENT_DNS1
 
 # Adguard DNS by default
 # 176.103.130.131
+# Cloudflare
+# 1.0.0.1
 CLIENT_DNS2="176.103.130.131"
+#CLIENT_DNS2="1.0.0.1"
 read -rp "Second DNS resolver to use for the client: " -e -i "$CLIENT_DNS2" CLIENT_DNS2
 
 # Ask for pre-shared symmetric key
-IS_PRE_SYMM="y"
+IS_PRE_SYMM="n"
 read -rp "Want to use pre-shared symmetric key? [Y/n]: " -e -i "$IS_PRE_SYMM" IS_PRE_SYMM
 
 if [[ $SERVER_PUB_IP =~ .*:.* ]]
@@ -190,6 +196,9 @@ elif [[ "$OS" = 'centos' ]]; then
     if [ ! -f /usr/bin/qrencode ]; then
         yum -y install qrencode
     fi
+    if [ ! -f /usr/sbin/tcpdump ]; then
+      yum -y install tcpdump
+    fi
     if [ ! -f /usr/bin/wg ]; then
       yum -y install wireguard-dkms wireguard-tools
     fi
@@ -210,8 +219,8 @@ echo "[Interface]
 Address = $SERVER_WG_IPV4/24,$SERVER_WG_IPV6/64
 ListenPort = $SERVER_PORT
 PrivateKey = $SERVER_PRIV_KEY
-PostUp = iptables -t nat -A POSTROUTING -o $SERVER_PUB_NIC -j MASQUERADE; ip6tables -t nat -A POSTROUTING -o $SERVER_PUB_NIC -j MASQUERADE
-PostDown = iptables -t nat -D POSTROUTING -o $SERVER_PUB_NIC -j MASQUERADE; ip6tables -t nat -D POSTROUTING -o $SERVER_PUB_NIC -j MASQUERADE" > "/etc/wireguard/$SERVER_WG_NIC.conf"
+#PostUp = iptables -A FORWARD -o $SERVER_WG_NIC -j ACCEPT; ip6tables -A FORWARD -o $SERVER_WG_NIC -j ACCEPT; iptables -t nat -A POSTROUTING -o $SERVER_PUB_NIC -j MASQUERADE; ip6tables -t nat -A POSTROUTING -o $SERVER_PUB_NIC -j MASQUERADE
+#PostDown = iptables -D FORWARD -o $SERVER_WG_NIC -j ACCEPT; ip6tables -D FORWARD -o $SERVER_WG_NIC -j ACCEPT; iptables -t nat -D POSTROUTING -o $SERVER_PUB_NIC -j MASQUERADE; ip6tables -t nat -D POSTROUTING -o $SERVER_PUB_NIC -j MASQUERADE" > "/etc/wireguard/$SERVER_WG_NIC.conf"
 
 # Add client 1 to 10 as a peer to the server
 echo "
@@ -536,6 +545,27 @@ cat "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_10.conf"
 echo
 echo "qrencode -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_10.conf"
 echo
+echo "firewalld setup"
+echo
+echo
+echo
+echo "firewall-cmd --permanent --add-rich-rule=\"rule family=ipv4 source address=$SERVER_WG_IPV4/24 masquerade\""
+firewall-cmd --permanent --add-rich-rule="rule family=ipv4 source address=$SERVER_WG_IPV4/24 masquerade"
+echo
+echo "firewall-cmd --permanent --add-rich-rule=\"rule family=ipv6 source address=$SERVER_WG_IPV6/64 masquerade\""
+firewall-cmd --permanent --add-rich-rule="rule family=ipv6 source address=$SERVER_WG_IPV6/64 masquerade"
+echo
+echo "firewall-cmd --permanent --direct --add-rule ipv4 filter FORWARD 0 -i wg0 -o eth0 -j ACCEPT"
+firewall-cmd --permanent --direct --add-rule ipv4 filter FORWARD 0 -i wg0 -o eth0 -j ACCEPT
+echo
+echo "firewall-cmd --permanent --direct --add-rule ipv6 filter FORWARD 0 -i wg0 -o eth0 -j ACCEPT"
+firewall-cmd --permanent --direct --add-rule ipv6 filter FORWARD 0 -i wg0 -o eth0 -j ACCEPT
+echo
+echo "firewall-cmd --reload"
+firewall-cmd --reload
+echo
+echo "firewall-cmd --permanent --list-rich-rules"
+firewall-cmd --permanent --list-rich-rules
 }
 
 case "$1" in
@@ -544,6 +574,11 @@ case "$1" in
     ;;
   reset )
     wg_setup reset
+    ;;
+  check )
+    echo
+    echo "tcpdump -i wg0"
+    echo
     ;;
   * )
     echo
