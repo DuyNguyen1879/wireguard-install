@@ -43,6 +43,54 @@ else
     exit 1
 fi
 
+unbound() {
+  reset=$1
+  echo
+  echo "setup unbound DNS resolver with DNS-over-TLS & DNSSEC"
+  echo 
+  if [[ "$OS" = 'centos' ]]; then
+    if [ ! -d /etc/unbound/conf.d ]; then
+        yum -y install unbound
+    fi
+  fi
+cat > /etc/unbound/conf.d/wireguard.conf <<EOF
+server:
+    interface: ::1                                            
+    interface: 127.0.0.1
+    interface: 10.66.66.1
+EOF
+cat > /etc/unbound/conf.d/wireguard-forward.conf <<EOF
+server:                                                                                       
+  forward-zone:                                                                               
+   name: "."                                                                                  
+   forward-ssl-upstream: yes                                                                  
+   forward-addr: 1.1.1.1@853#one.one.one.one                                                  
+   #forward-addr: 8.8.8.8@853#dns.google                                                       
+   forward-addr: 9.9.9.9@853#dns.quad9.net                                                    
+   forward-addr: 1.0.0.1@853#one.one.one.one                                                  
+   #forward-addr: 8.8.4.4@853#dns.google                                                       
+   forward-addr: 149.112.112.112@853#dns.quad9.net
+EOF
+  echo
+  if [[ "$reset" = 'reset' ]]; then
+    echo "systemctl restart unbound"
+    systemctl restart unbound
+  else
+    echo "systemctl start unbound"
+    systemctl start unbound
+  fi
+  echo
+  echo "systemctl enable unbound"
+  systemctl enable unbound
+  echo
+  echo "systemctl status unbound"
+  systemctl status unbound
+  echo
+  echo "nslookup www.google.com localhost"
+  nslookup www.google.com localhost
+  echo
+}
+
 wg_setup() {
   reset=$1
 
@@ -195,6 +243,9 @@ elif [[ "$OS" = 'centos' ]]; then
     fi
     if [ ! -f /usr/bin/qrencode ]; then
         yum -y install qrencode
+    fi
+    if [ ! -f /usr/bin/dig ]; then
+        yum -y install bind-utils
     fi
     if [ ! -f /usr/sbin/tcpdump ]; then
       yum -y install tcpdump
@@ -545,9 +596,10 @@ cat "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_10.conf"
 echo
 echo "qrencode -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_10.conf"
 echo
+echo "wg showconf $SERVER_WG_NIC"
+wg showconf $SERVER_WG_NIC
+echo 
 echo "firewalld setup"
-echo
-echo
 echo
 echo "firewall-cmd --permanent --add-rich-rule=\"rule family=ipv4 source address=$SERVER_WG_IPV4/24 masquerade\""
 firewall-cmd --permanent --add-rich-rule="rule family=ipv4 source address=$SERVER_WG_IPV4/24 masquerade"
@@ -555,11 +607,11 @@ echo
 echo "firewall-cmd --permanent --add-rich-rule=\"rule family=ipv6 source address=$SERVER_WG_IPV6/64 masquerade\""
 firewall-cmd --permanent --add-rich-rule="rule family=ipv6 source address=$SERVER_WG_IPV6/64 masquerade"
 echo
-echo "firewall-cmd --permanent --direct --add-rule ipv4 filter FORWARD 0 -i wg0 -o eth0 -j ACCEPT"
-firewall-cmd --permanent --direct --add-rule ipv4 filter FORWARD 0 -i wg0 -o eth0 -j ACCEPT
+echo "firewall-cmd --permanent --direct --add-rule ipv4 filter FORWARD 0 -i $SERVER_WG_NIC -o $SERVER_PUB_NIC -j ACCEPT"
+firewall-cmd --permanent --direct --add-rule ipv4 filter FORWARD 0 -i $SERVER_WG_NIC -o $SERVER_PUB_NIC -j ACCEPT
 echo
-echo "firewall-cmd --permanent --direct --add-rule ipv6 filter FORWARD 0 -i wg0 -o eth0 -j ACCEPT"
-firewall-cmd --permanent --direct --add-rule ipv6 filter FORWARD 0 -i wg0 -o eth0 -j ACCEPT
+echo "firewall-cmd --permanent --direct --add-rule ipv6 filter FORWARD 0 -i $SERVER_WG_NIC -o $SERVER_PUB_NIC -j ACCEPT"
+firewall-cmd --permanent --direct --add-rule ipv6 filter FORWARD 0 -i $SERVER_WG_NIC -o $SERVER_PUB_NIC -j ACCEPT
 echo
 echo "firewall-cmd --reload"
 firewall-cmd --reload
@@ -570,15 +622,18 @@ firewall-cmd --permanent --list-rich-rules
 
 case "$1" in
   install )
+    unbound
     wg_setup
     ;;
   reset )
+    unbound reset
     wg_setup reset
     ;;
   check )
     echo
-    echo "tcpdump -i wg0"
+    echo "tcpdump -i $SERVER_WG_NIC"
     echo
+    echo "tcpdump -vv -x -X -s 1500 -i eth0 'port 53'"
     ;;
   * )
     echo
