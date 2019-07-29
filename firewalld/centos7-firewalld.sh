@@ -27,6 +27,9 @@ echo
 echo "firewall-cmd --permanent --zone=public --add-port=$PORTNUM/tcp"
 firewall-cmd --permanent --zone=public --add-port=$PORTNUM/tcp
 echo
+echo "firewall-cmd --permanent --zone=public --add-port=1194/udp"
+firewall-cmd --permanent --zone=public --add-port=1194/udp
+echo
 echo "firewall-cmd --zone=public --remove-service=ssh --permanent;"
 firewall-cmd --zone=public --remove-service=ssh --permanent;
 echo
