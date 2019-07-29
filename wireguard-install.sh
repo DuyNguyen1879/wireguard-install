@@ -58,6 +58,9 @@ server:
     interface: ::1                                            
     interface: 127.0.0.1
     interface: 10.66.66.1
+
+    hide-identity: yes
+    hide-version: yes  
 EOF
 cat > /etc/unbound/conf.d/wireguard-forward.conf <<EOF
 server:                                                                                       
@@ -330,7 +333,8 @@ echo "
 [Peer]
 PublicKey = $SERVER_PUB_KEY
 Endpoint = $ENDPOINT
-AllowedIPs = 0.0.0.0/0,::/0" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_1.conf"
+AllowedIPs = 0.0.0.0/0,::/0
+PersistentKeepalive = 15" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_1.conf"
 
 #########################################################################
 # 2nd client
@@ -346,7 +350,8 @@ echo "
 [Peer]
 PublicKey = $SERVER_PUB_KEY
 Endpoint = $ENDPOINT
-AllowedIPs = 0.0.0.0/0,::/0" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_2.conf"
+AllowedIPs = 0.0.0.0/0,::/0
+PersistentKeepalive = 15" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_2.conf"
 
 #########################################################################
 # 3rd client
@@ -362,7 +367,8 @@ echo "
 [Peer]
 PublicKey = $SERVER_PUB_KEY
 Endpoint = $ENDPOINT
-AllowedIPs = 0.0.0.0/0,::/0" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_3.conf"
+AllowedIPs = 0.0.0.0/0,::/0
+PersistentKeepalive = 15" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_3.conf"
 
 #########################################################################
 # 4th client
@@ -378,7 +384,8 @@ echo "
 [Peer]
 PublicKey = $SERVER_PUB_KEY
 Endpoint = $ENDPOINT
-AllowedIPs = 0.0.0.0/0,::/0" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_4.conf"
+AllowedIPs = 0.0.0.0/0,::/0
+PersistentKeepalive = 15" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_4.conf"
 
 #########################################################################
 # 5th client
@@ -394,7 +401,8 @@ echo "
 [Peer]
 PublicKey = $SERVER_PUB_KEY
 Endpoint = $ENDPOINT
-AllowedIPs = 0.0.0.0/0,::/0" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_5.conf"
+AllowedIPs = 0.0.0.0/0,::/0
+PersistentKeepalive = 15" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_5.conf"
 
 #########################################################################
 # 6th client
@@ -410,7 +418,8 @@ echo "
 [Peer]
 PublicKey = $SERVER_PUB_KEY
 Endpoint = $ENDPOINT
-AllowedIPs = 0.0.0.0/0,::/0" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_6.conf"
+AllowedIPs = 0.0.0.0/0,::/0
+PersistentKeepalive = 15" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_6.conf"
 
 #########################################################################
 # 7th client
@@ -426,7 +435,8 @@ echo "
 [Peer]
 PublicKey = $SERVER_PUB_KEY
 Endpoint = $ENDPOINT
-AllowedIPs = 0.0.0.0/0,::/0" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_7.conf"
+AllowedIPs = 0.0.0.0/0,::/0
+PersistentKeepalive = 15" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_7.conf"
 
 #########################################################################
 # 8th client
@@ -442,7 +452,8 @@ echo "
 [Peer]
 PublicKey = $SERVER_PUB_KEY
 Endpoint = $ENDPOINT
-AllowedIPs = 0.0.0.0/0,::/0" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_8.conf"
+AllowedIPs = 0.0.0.0/0,::/0
+PersistentKeepalive = 15" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_8.conf"
 
 #########################################################################
 # 9th client
@@ -458,7 +469,8 @@ echo "
 [Peer]
 PublicKey = $SERVER_PUB_KEY
 Endpoint = $ENDPOINT
-AllowedIPs = 0.0.0.0/0,::/0" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_9.conf"
+AllowedIPs = 0.0.0.0/0,::/0
+PersistentKeepalive = 15" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_9.conf"
 
 #########################################################################
 # 10th client
@@ -474,7 +486,8 @@ echo "
 [Peer]
 PublicKey = $SERVER_PUB_KEY
 Endpoint = $ENDPOINT
-AllowedIPs = 0.0.0.0/0,::/0" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_10.conf"
+AllowedIPs = 0.0.0.0/0,::/0
+PersistentKeepalive = 15" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_10.conf"
 
 # Add pre shared symmetric key to respective files
 case "$IS_PRE_SYMM" in
