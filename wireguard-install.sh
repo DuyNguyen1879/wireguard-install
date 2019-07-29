@@ -95,14 +95,16 @@ elif [[ "$OS" = 'fedora' ]]; then
     dnf install wireguard-dkms wireguard-tools
 elif [[ "$OS" = 'centos' ]]; then
     curl -Lo /etc/yum.repos.d/wireguard.repo https://copr.fedorainfracloud.org/coprs/jdoss/wireguard/repo/epel-7/jdoss-wireguard-epel-7.repo
-    yum install epel-release
+    if [ ! -f /etc/yum.repos.d/epel.repo ]; then
+        yum install epel-release
+    fi
     yum install wireguard-dkms wireguard-tools
 elif [[ "$OS" = 'arch' ]]; then
     pacman -S wireguard-tools
 fi
 
 # Make sure the directory exists (this does not seem the be the case on fedora)
-mkdir /etc/wireguard > /dev/null 2>&1
+mkdir -p /etc/wireguard > /dev/null 2>&1
 
 # Generate key pair for the server
 SERVER_PRIV_KEY=$(wg genkey)
