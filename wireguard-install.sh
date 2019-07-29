@@ -281,8 +281,38 @@ SERVER_PRIV_KEY=$(wg genkey)
 SERVER_PUB_KEY=$(echo "$SERVER_PRIV_KEY" | wg pubkey)
 
 # Generate key pair for the server
-CLIENT_PRIV_KEY=$(wg genkey)
-CLIENT_PUB_KEY=$(echo "$CLIENT_PRIV_KEY" | wg pubkey)
+CLIENT_PRIV_KEY1=$(wg genkey)
+CLIENT_PUB_KEY1=$(echo "$CLIENT_PRIV_KEY1" | wg pubkey)
+
+CLIENT_PRIV_KEY2=$(wg genkey)
+CLIENT_PUB_KEY2=$(echo "$CLIENT_PRIV_KEY2" | wg pubkey)
+
+CLIENT_PRIV_KEY3=$(wg genkey)
+CLIENT_PUB_KEY3=$(echo "$CLIENT_PRIV_KEY3" | wg pubkey)
+
+CLIENT_PRIV_KEY4=$(wg genkey)
+CLIENT_PUB_KEY4=$(echo "$CLIENT_PRIV_KEY4" | wg pubkey)
+
+CLIENT_PRIV_KEY5=$(wg genkey)
+CLIENT_PUB_KEY5=$(echo "$CLIENT_PRIV_KEY5" | wg pubkey)
+
+CLIENT_PRIV_KEY6=$(wg genkey)
+CLIENT_PUB_KEY6=$(echo "$CLIENT_PRIV_KEY6" | wg pubkey)
+
+CLIENT_PRIV_KEY6=$(wg genkey)
+CLIENT_PUB_KEY6=$(echo "$CLIENT_PRIV_KEY6" | wg pubkey)
+
+CLIENT_PRIV_KEY7=$(wg genkey)
+CLIENT_PUB_KEY7=$(echo "$CLIENT_PRIV_KEY7" | wg pubkey)
+
+CLIENT_PRIV_KEY8=$(wg genkey)
+CLIENT_PUB_KEY8=$(echo "$CLIENT_PRIV_KEY8" | wg pubkey)
+
+CLIENT_PRIV_KEY9=$(wg genkey)
+CLIENT_PUB_KEY9=$(echo "$CLIENT_PRIV_KEY9" | wg pubkey)
+
+CLIENT_PRIV_KEY10=$(wg genkey)
+CLIENT_PUB_KEY10=$(echo "$CLIENT_PRIV_KEY10" | wg pubkey)
 
 # Add server interface
 echo "[Interface]
@@ -296,50 +326,50 @@ PrivateKey = $SERVER_PRIV_KEY
 echo "
 
 [Peer]
-PublicKey = $CLIENT_PUB_KEY
+PublicKey = $CLIENT_PUB_KEY1
 AllowedIPs = $CLIENT_WG_IPV4_1/32,$CLIENT_WG_IPV6_1/128
 
 [Peer]
-PublicKey = $CLIENT_PUB_KEY
+PublicKey = $CLIENT_PUB_KEY2
 AllowedIPs = $CLIENT_WG_IPV4_2/32,$CLIENT_WG_IPV6_2/128
 
 [Peer]
-PublicKey = $CLIENT_PUB_KEY
+PublicKey = $CLIENT_PUB_KEY3
 AllowedIPs = $CLIENT_WG_IPV4_3/32,$CLIENT_WG_IPV6_3/128
 
 [Peer]
-PublicKey = $CLIENT_PUB_KEY
+PublicKey = $CLIENT_PUB_KEY4
 AllowedIPs = $CLIENT_WG_IPV4_4/32,$CLIENT_WG_IPV6_4/128
 
 [Peer]
-PublicKey = $CLIENT_PUB_KEY
+PublicKey = $CLIENT_PUB_KEY5
 AllowedIPs = $CLIENT_WG_IPV4_5/32,$CLIENT_WG_IPV6_5/128
 
 [Peer]
-PublicKey = $CLIENT_PUB_KEY
+PublicKey = $CLIENT_PUB_KEY6
 AllowedIPs = $CLIENT_WG_IPV4_6/32,$CLIENT_WG_IPV6_6/128
 
 [Peer]
-PublicKey = $CLIENT_PUB_KEY
+PublicKey = $CLIENT_PUB_KEY7
 AllowedIPs = $CLIENT_WG_IPV4_7/32,$CLIENT_WG_IPV6_7/128
 
 [Peer]
-PublicKey = $CLIENT_PUB_KEY
+PublicKey = $CLIENT_PUB_KEY8
 AllowedIPs = $CLIENT_WG_IPV4_8/32,$CLIENT_WG_IPV6_8/128
 
 [Peer]
-PublicKey = $CLIENT_PUB_KEY
+PublicKey = $CLIENT_PUB_KEY9
 AllowedIPs = $CLIENT_WG_IPV4_9/32,$CLIENT_WG_IPV6_9/128
 
 [Peer]
-PublicKey = $CLIENT_PUB_KEY
+PublicKey = $CLIENT_PUB_KEY10
 AllowedIPs = $CLIENT_WG_IPV4_10/32,$CLIENT_WG_IPV6_10/128" >> "/etc/wireguard/$SERVER_WG_NIC.conf"
 
 #########################################################################
 # 1st client
 # Create client file with interface
 echo "[Interface]
-PrivateKey = $CLIENT_PRIV_KEY
+PrivateKey = $CLIENT_PRIV_KEY1
 Address = $CLIENT_WG_IPV4_1/24,$CLIENT_WG_IPV6_1/64
 DNS = $CLIENT_DNS1,$CLIENT_DNS2" > "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_1.conf"
 
@@ -356,7 +386,7 @@ PersistentKeepalive = 15" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_1.conf"
 # 2nd client
 # Create client file with interface
 echo "[Interface]
-PrivateKey = $CLIENT_PRIV_KEY
+PrivateKey = $CLIENT_PRIV_KEY2
 Address = $CLIENT_WG_IPV4_2/24,$CLIENT_WG_IPV6_2/64
 DNS = $CLIENT_DNS1,$CLIENT_DNS2" > "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_2.conf"
 
@@ -373,7 +403,7 @@ PersistentKeepalive = 15" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_2.conf"
 # 3rd client
 # Create client file with interface
 echo "[Interface]
-PrivateKey = $CLIENT_PRIV_KEY
+PrivateKey = $CLIENT_PRIV_KEY3
 Address = $CLIENT_WG_IPV4_3/24,$CLIENT_WG_IPV6_3/64
 DNS = $CLIENT_DNS1,$CLIENT_DNS2" > "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_3.conf"
 
@@ -390,7 +420,7 @@ PersistentKeepalive = 15" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_3.conf"
 # 4th client
 # Create client file with interface
 echo "[Interface]
-PrivateKey = $CLIENT_PRIV_KEY
+PrivateKey = $CLIENT_PRIV_KEY4
 Address = $CLIENT_WG_IPV4_4/24,$CLIENT_WG_IPV6_4/64
 DNS = $CLIENT_DNS1,$CLIENT_DNS2" > "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_4.conf"
 
@@ -407,7 +437,7 @@ PersistentKeepalive = 15" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_4.conf"
 # 5th client
 # Create client file with interface
 echo "[Interface]
-PrivateKey = $CLIENT_PRIV_KEY
+PrivateKey = $CLIENT_PRIV_KEY5
 Address = $CLIENT_WG_IPV4_5/24,$CLIENT_WG_IPV6_5/64
 DNS = $CLIENT_DNS1,$CLIENT_DNS2" > "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_5.conf"
 
@@ -424,7 +454,7 @@ PersistentKeepalive = 15" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_5.conf"
 # 6th client
 # Create client file with interface
 echo "[Interface]
-PrivateKey = $CLIENT_PRIV_KEY
+PrivateKey = $CLIENT_PRIV_KEY6
 Address = $CLIENT_WG_IPV4_6/24,$CLIENT_WG_IPV6_6/64
 DNS = $CLIENT_DNS1,$CLIENT_DNS2" > "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_6.conf"
 
@@ -441,7 +471,7 @@ PersistentKeepalive = 15" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_6.conf"
 # 7th client
 # Create client file with interface
 echo "[Interface]
-PrivateKey = $CLIENT_PRIV_KEY
+PrivateKey = $CLIENT_PRIV_KEY7
 Address = $CLIENT_WG_IPV4_7/24,$CLIENT_WG_IPV6_7/64
 DNS = $CLIENT_DNS1,$CLIENT_DNS2" > "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_7.conf"
 
@@ -458,7 +488,7 @@ PersistentKeepalive = 15" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_7.conf"
 # 8th client
 # Create client file with interface
 echo "[Interface]
-PrivateKey = $CLIENT_PRIV_KEY
+PrivateKey = $CLIENT_PRIV_KEY8
 Address = $CLIENT_WG_IPV4_8/24,$CLIENT_WG_IPV6_8/64
 DNS = $CLIENT_DNS1,$CLIENT_DNS2" > "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_8.conf"
 
@@ -475,7 +505,7 @@ PersistentKeepalive = 15" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_8.conf"
 # 9th client
 # Create client file with interface
 echo "[Interface]
-PrivateKey = $CLIENT_PRIV_KEY
+PrivateKey = $CLIENT_PRIV_KEY9
 Address = $CLIENT_WG_IPV4_9/24,$CLIENT_WG_IPV6_9/64
 DNS = $CLIENT_DNS1,$CLIENT_DNS2" > "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_9.conf"
 
@@ -492,7 +522,7 @@ PersistentKeepalive = 15" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_9.conf"
 # 10th client
 # Create client file with interface
 echo "[Interface]
-PrivateKey = $CLIENT_PRIV_KEY
+PrivateKey = $CLIENT_PRIV_KEY10
 Address = $CLIENT_WG_IPV4_10/24,$CLIENT_WG_IPV6_10/64
 DNS = $CLIENT_DNS1,$CLIENT_DNS2" > "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_10.conf"
 

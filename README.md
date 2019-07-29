@@ -1,6 +1,6 @@
 # WireGuard installer
 
-This forked branch version is optimised for virgin **CentOS 7 64bit** systems and also adds Unbound DNS resolver with DNS-over-TLS and DNSSEC support for Wireguard and uses CentOS 7 firewalld rich-rules to properlyy configure firewalld usage with Wireguard.
+This forked branch version is optimised for virgin **CentOS 7 64bit** systems and also adds Unbound DNS resolver with DNS-over-TLS and DNSSEC support for Wireguard and uses CentOS 7 firewalld rich-rules to properly configure firewalld usage with Wireguard.
 
 Easily set up a dual-stack WireGuard VPN on a Linux server. See the issues for the WIP.
 
