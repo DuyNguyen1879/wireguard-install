@@ -55,12 +55,24 @@ unbound() {
   fi
 cat > /etc/unbound/conf.d/wireguard.conf <<EOF
 server:
+    access-control:  0.0.0.0/0       refuse
+    access-control:  127.0.0.1       allow
+    access-control:  10.66.66.0/24   allow
+    private-address: 10.66.66.0/24
+
     interface: ::1                                            
     interface: 127.0.0.1
     interface: 10.66.66.1
 
     hide-identity: yes
     hide-version: yes
+    harden-glue: yes
+    harden-dnssec-stripped: yes
+    harden-referral-path: yes
+    unwanted-reply-threshold: 10000000
+
+    #Have the validator print validation failures to the log.
+    val-log-level: 1
 
     cache-min-ttl: 1800
     cache-max-ttl: 14400
@@ -217,6 +229,8 @@ read -rp "Client 10 WireGuard IPv6 " -e -i "$CLIENT_WG_IPV6_10" CLIENT_WG_IPV6_1
 # 176.103.130.130
 # Cloudflare
 # 1.1.1.1
+# Unbound
+# 10.66.66.1
 CLIENT_DNS1="176.103.130.130"
 #CLIENT_DNS1="1.1.1.1"
 read -rp "First DNS resolver to use for the client: " -e -i "$CLIENT_DNS1" CLIENT_DNS1
