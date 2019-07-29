@@ -606,6 +606,8 @@ cat "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_1.conf"
 echo
 echo "qrencode -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_1.conf"
 echo
+qrencode -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_1.conf
+echo
 echo "----------------------------------"
 echo "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_2.conf"
 echo
@@ -613,12 +615,16 @@ cat "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_2.conf"
 echo
 echo "qrencode -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_2.conf"
 echo
+qrencode -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_2.conf
+echo
 echo "----------------------------------"
 echo "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_3.conf"
 echo
 cat "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_3.conf"
 echo
 echo "qrencode -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_3.conf"
+echo
+qrencode -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_3.conf
 echo
 echo "----------------------------------"
 echo "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_4.conf"
