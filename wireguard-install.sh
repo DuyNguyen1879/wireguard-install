@@ -60,7 +60,10 @@ server:
     interface: 10.66.66.1
 
     hide-identity: yes
-    hide-version: yes  
+    hide-version: yes
+
+    cache-min-ttl: 1800
+    cache-max-ttl: 14400
 EOF
 cat > /etc/unbound/conf.d/wireguard-forward.conf <<EOF
 server:                                                                                       
@@ -69,11 +72,12 @@ server:
    forward-ssl-upstream: yes                                                                  
    forward-addr: 1.1.1.1@853#one.one.one.one                                                  
    #forward-addr: 8.8.8.8@853#dns.google                                                       
-   forward-addr: 9.9.9.9@853#dns.quad9.net                                                    
+   #forward-addr: 9.9.9.9@853#dns.quad9.net                                                    
    forward-addr: 1.0.0.1@853#one.one.one.one                                                  
    #forward-addr: 8.8.4.4@853#dns.google                                                       
-   forward-addr: 149.112.112.112@853#dns.quad9.net
+   #forward-addr: 149.112.112.112@853#dns.quad9.net
 EOF
+  echo "nameserver 127.0.0.1" > /etc/resolv.conf
   echo
   if [[ "$reset" = 'reset' ]]; then
     echo "systemctl restart unbound"
@@ -89,9 +93,21 @@ EOF
   echo "systemctl status unbound"
   systemctl status unbound
   echo
-  echo "nslookup www.google.com localhost"
-  nslookup www.google.com localhost
+  echo "unbound-control stats"
+  unbound-control stats
   echo
+  echo "nslookup cloudflare.com localhost"
+  nslookup cloudflare.com localhost
+  echo
+  echo "dig @localhost cloudflare.com +dnssec +multi"
+  dig @localhost cloudflare.com +dnssec +multi
+  echo
+  echo "unbound-host -vDr cloudflare.com"
+  unbound-host -vDr cloudflare.com
+  echo
+  echo "dig +dnssec A www.dnssec.cz | grep ad"
+  dig +dnssec A www.dnssec.cz | grep ad
+  echo 
 }
 
 wg_setup() {
