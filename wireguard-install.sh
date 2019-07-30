@@ -5,6 +5,7 @@
 # https://angristan.xyz/how-to-setup-vpn-server-wireguard-nat-ipv6/
 ###########################################################################
 CLIENT_CONFIGDIR='/etc/wireguard/client-configs'
+KEEPALIVE='25'
 
 # Make sure the directory exists (this does not seem the be the case on fedora)
 mkdir -p "$CLIENT_CONFIGDIR" > /dev/null 2>&1
@@ -225,6 +226,22 @@ read -rp "Client 10 WireGuard IPv4 " -e -i "$CLIENT_WG_IPV4_10" CLIENT_WG_IPV4_1
 CLIENT_WG_IPV6_10="fd42:42:42::11"
 read -rp "Client 10 WireGuard IPv6 " -e -i "$CLIENT_WG_IPV6_10" CLIENT_WG_IPV6_10
 
+# 11th client
+
+CLIENT_WG_IPV4_11="10.66.66.12"
+read -rp "Client 11 WireGuard IPv4 " -e -i "$CLIENT_WG_IPV4_11" CLIENT_WG_IPV4_11
+
+CLIENT_WG_IPV6_11="fd42:42:42::12"
+read -rp "Client 11 WireGuard IPv6 " -e -i "$CLIENT_WG_IPV6_11" CLIENT_WG_IPV6_11
+
+# 12th client
+
+CLIENT_WG_IPV4_12="10.66.66.13"
+read -rp "Client 12 WireGuard IPv4 " -e -i "$CLIENT_WG_IPV4_12" CLIENT_WG_IPV4_12
+
+CLIENT_WG_IPV6_12="fd42:42:42::13"
+read -rp "Client 12 WireGuard IPv6 " -e -i "$CLIENT_WG_IPV6_12" CLIENT_WG_IPV6_12
+
 # Adguard DNS by default
 # 176.103.130.130
 # Cloudflare
@@ -244,7 +261,7 @@ CLIENT_DNS2="176.103.130.131"
 read -rp "Second DNS resolver to use for the client: " -e -i "$CLIENT_DNS2" CLIENT_DNS2
 
 # Ask for pre-shared symmetric key
-IS_PRE_SYMM="n"
+IS_PRE_SYMM="y"
 read -rp "Want to use pre-shared symmetric key? [Y/n]: " -e -i "$IS_PRE_SYMM" IS_PRE_SYMM
 
 if [[ $SERVER_PUB_IP =~ .*:.* ]]
@@ -290,6 +307,25 @@ elif [[ "$OS" = 'arch' ]]; then
     pacman -S wireguard-tools
 fi
 
+# Generate base64 preshared key
+if [[ "$IS_PRE_SYMM" = [yY] ]]; then
+  CLIENT_SYMM_PRE_KEY=$( wg genpsk )
+  PSK1="PresharedKey = $CLIENT_SYMM_PRE_KEY"
+  PSK2="PresharedKey = $CLIENT_SYMM_PRE_KEY"
+  PSK3="PresharedKey = $CLIENT_SYMM_PRE_KEY"
+  PSK4="PresharedKey = $CLIENT_SYMM_PRE_KEY"
+  PSK5="PresharedKey = $CLIENT_SYMM_PRE_KEY"
+  PSK6="PresharedKey = $CLIENT_SYMM_PRE_KEY"
+  PSK7="PresharedKey = $CLIENT_SYMM_PRE_KEY"
+  PSK8="PresharedKey = $CLIENT_SYMM_PRE_KEY"
+  PSK9="PresharedKey = $CLIENT_SYMM_PRE_KEY"
+  PSK10="PresharedKey = $CLIENT_SYMM_PRE_KEY"
+  PSK11="PresharedKey = $CLIENT_SYMM_PRE_KEY"
+  PSK12="PresharedKey = $CLIENT_SYMM_PRE_KEY"
+else
+  IS_PRE_SYMM='n'
+fi
+
 # Generate key pair for the server
 SERVER_PRIV_KEY=$(wg genkey)
 SERVER_PUB_KEY=$(echo "$SERVER_PRIV_KEY" | wg pubkey)
@@ -328,6 +364,12 @@ CLIENT_PUB_KEY9=$(echo "$CLIENT_PRIV_KEY9" | wg pubkey)
 CLIENT_PRIV_KEY10=$(wg genkey)
 CLIENT_PUB_KEY10=$(echo "$CLIENT_PRIV_KEY10" | wg pubkey)
 
+CLIENT_PRIV_KEY11=$(wg genkey)
+CLIENT_PUB_KEY11=$(echo "$CLIENT_PRIV_KEY11" | wg pubkey)
+
+CLIENT_PRIV_KEY12=$(wg genkey)
+CLIENT_PUB_KEY12=$(echo "$CLIENT_PRIV_KEY12" | wg pubkey)
+
 # Add server interface
 echo "[Interface]
 Address = $SERVER_WG_IPV4/24,$SERVER_WG_IPV6/64
@@ -342,42 +384,62 @@ echo "
 [Peer]
 PublicKey = $CLIENT_PUB_KEY1
 AllowedIPs = $CLIENT_WG_IPV4_1/32,$CLIENT_WG_IPV6_1/128
+$PSK1
 
 [Peer]
 PublicKey = $CLIENT_PUB_KEY2
 AllowedIPs = $CLIENT_WG_IPV4_2/32,$CLIENT_WG_IPV6_2/128
+$PSK2
 
 [Peer]
 PublicKey = $CLIENT_PUB_KEY3
 AllowedIPs = $CLIENT_WG_IPV4_3/32,$CLIENT_WG_IPV6_3/128
+$PSK3
 
 [Peer]
 PublicKey = $CLIENT_PUB_KEY4
 AllowedIPs = $CLIENT_WG_IPV4_4/32,$CLIENT_WG_IPV6_4/128
+$PSK4
 
 [Peer]
 PublicKey = $CLIENT_PUB_KEY5
 AllowedIPs = $CLIENT_WG_IPV4_5/32,$CLIENT_WG_IPV6_5/128
+$PSK5
 
 [Peer]
 PublicKey = $CLIENT_PUB_KEY6
 AllowedIPs = $CLIENT_WG_IPV4_6/32,$CLIENT_WG_IPV6_6/128
+$PSK6
 
 [Peer]
 PublicKey = $CLIENT_PUB_KEY7
 AllowedIPs = $CLIENT_WG_IPV4_7/32,$CLIENT_WG_IPV6_7/128
+$PSK7
 
 [Peer]
 PublicKey = $CLIENT_PUB_KEY8
 AllowedIPs = $CLIENT_WG_IPV4_8/32,$CLIENT_WG_IPV6_8/128
+$PSK8
 
 [Peer]
 PublicKey = $CLIENT_PUB_KEY9
 AllowedIPs = $CLIENT_WG_IPV4_9/32,$CLIENT_WG_IPV6_9/128
+$PSK9
 
 [Peer]
 PublicKey = $CLIENT_PUB_KEY10
-AllowedIPs = $CLIENT_WG_IPV4_10/32,$CLIENT_WG_IPV6_10/128" >> "/etc/wireguard/$SERVER_WG_NIC.conf"
+AllowedIPs = $CLIENT_WG_IPV4_10/32,$CLIENT_WG_IPV6_10/128
+$PSK10
+
+[Peer]
+PublicKey = $CLIENT_PUB_KEY11
+AllowedIPs = $CLIENT_WG_IPV4_11/32,$CLIENT_WG_IPV6_11/128
+$PSK11
+
+[Peer]
+PublicKey = $CLIENT_PUB_KEY12
+AllowedIPs = $CLIENT_WG_IPV4_12/32,$CLIENT_WG_IPV6_12/128
+$PSK12" >> "/etc/wireguard/$SERVER_WG_NIC.conf"
 
 #########################################################################
 # 1st client
@@ -394,7 +456,8 @@ echo "
 PublicKey = $SERVER_PUB_KEY
 Endpoint = $ENDPOINT
 AllowedIPs = 0.0.0.0/0,::/0
-PersistentKeepalive = 15" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_1.conf"
+PersistentKeepalive = $KEEPALIVE
+$PSK1" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_1.conf"
 
 #########################################################################
 # 2nd client
@@ -411,7 +474,8 @@ echo "
 PublicKey = $SERVER_PUB_KEY
 Endpoint = $ENDPOINT
 AllowedIPs = 0.0.0.0/0,::/0
-PersistentKeepalive = 15" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_2.conf"
+PersistentKeepalive = $KEEPALIVE
+$PSK2" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_2.conf"
 
 #########################################################################
 # 3rd client
@@ -428,7 +492,8 @@ echo "
 PublicKey = $SERVER_PUB_KEY
 Endpoint = $ENDPOINT
 AllowedIPs = 0.0.0.0/0,::/0
-PersistentKeepalive = 15" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_3.conf"
+PersistentKeepalive = $KEEPALIVE
+$PSK3" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_3.conf"
 
 #########################################################################
 # 4th client
@@ -445,7 +510,8 @@ echo "
 PublicKey = $SERVER_PUB_KEY
 Endpoint = $ENDPOINT
 AllowedIPs = 0.0.0.0/0,::/0
-PersistentKeepalive = 15" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_4.conf"
+PersistentKeepalive = $KEEPALIVE
+$PSK4" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_4.conf"
 
 #########################################################################
 # 5th client
@@ -462,7 +528,8 @@ echo "
 PublicKey = $SERVER_PUB_KEY
 Endpoint = $ENDPOINT
 AllowedIPs = 0.0.0.0/0,::/0
-PersistentKeepalive = 15" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_5.conf"
+PersistentKeepalive = $KEEPALIVE
+$PSK5" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_5.conf"
 
 #########################################################################
 # 6th client
@@ -479,7 +546,8 @@ echo "
 PublicKey = $SERVER_PUB_KEY
 Endpoint = $ENDPOINT
 AllowedIPs = 0.0.0.0/0,::/0
-PersistentKeepalive = 15" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_6.conf"
+PersistentKeepalive = $KEEPALIVE
+$PSK6" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_6.conf"
 
 #########################################################################
 # 7th client
@@ -496,7 +564,8 @@ echo "
 PublicKey = $SERVER_PUB_KEY
 Endpoint = $ENDPOINT
 AllowedIPs = 0.0.0.0/0,::/0
-PersistentKeepalive = 15" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_7.conf"
+PersistentKeepalive = $KEEPALIVE
+$PSK7" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_7.conf"
 
 #########################################################################
 # 8th client
@@ -513,7 +582,8 @@ echo "
 PublicKey = $SERVER_PUB_KEY
 Endpoint = $ENDPOINT
 AllowedIPs = 0.0.0.0/0,::/0
-PersistentKeepalive = 15" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_8.conf"
+PersistentKeepalive = $KEEPALIVE
+$PSK8" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_8.conf"
 
 #########################################################################
 # 9th client
@@ -530,7 +600,8 @@ echo "
 PublicKey = $SERVER_PUB_KEY
 Endpoint = $ENDPOINT
 AllowedIPs = 0.0.0.0/0,::/0
-PersistentKeepalive = 15" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_9.conf"
+PersistentKeepalive = $KEEPALIVE
+$PSK9" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_9.conf"
 
 #########################################################################
 # 10th client
@@ -547,34 +618,54 @@ echo "
 PublicKey = $SERVER_PUB_KEY
 Endpoint = $ENDPOINT
 AllowedIPs = 0.0.0.0/0,::/0
-PersistentKeepalive = 15" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_10.conf"
+PersistentKeepalive = $KEEPALIVE
+$PSK10" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_10.conf"
 
-# Add pre shared symmetric key to respective files
-case "$IS_PRE_SYMM" in
-    [yY][eE][sS]|[yY]) 
-        CLIENT_SYMM_PRE_KEY=$( wg genpsk )
-        echo "PresharedKey = $CLIENT_SYMM_PRE_KEY" >> "/etc/wireguard/$SERVER_WG_NIC.conf"
-        echo "PresharedKey = $CLIENT_SYMM_PRE_KEY" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_1.conf"
-        echo "PresharedKey = $CLIENT_SYMM_PRE_KEY" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_2.conf"
-        echo "PresharedKey = $CLIENT_SYMM_PRE_KEY" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_3.conf"
-        echo "PresharedKey = $CLIENT_SYMM_PRE_KEY" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_4.conf"
-        echo "PresharedKey = $CLIENT_SYMM_PRE_KEY" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_5.conf"
-        echo "PresharedKey = $CLIENT_SYMM_PRE_KEY" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_6.conf"
-        echo "PresharedKey = $CLIENT_SYMM_PRE_KEY" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_7.conf"
-        echo "PresharedKey = $CLIENT_SYMM_PRE_KEY" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_8.conf"
-        echo "PresharedKey = $CLIENT_SYMM_PRE_KEY" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_9.conf"
-        echo "PresharedKey = $CLIENT_SYMM_PRE_KEY" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_10.conf"
-        ;;
-esac
+#########################################################################
+# 11th client
+# Create client file with interface
+echo "[Interface]
+PrivateKey = $CLIENT_PRIV_KEY11
+Address = $CLIENT_WG_IPV4_11/24,$CLIENT_WG_IPV6_11/64
+DNS = $CLIENT_DNS1,$CLIENT_DNS2" > "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_11.conf"
+
+# Add the server as a peer to the client
+echo "
+
+[Peer]
+PublicKey = $SERVER_PUB_KEY
+Endpoint = $ENDPOINT
+AllowedIPs = 0.0.0.0/0,::/0
+PersistentKeepalive = $KEEPALIVE
+$PSK11" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_11.conf"
+
+#########################################################################
+# 12th client
+# Create client file with interface
+echo "[Interface]
+PrivateKey = $CLIENT_PRIV_KEY12
+Address = $CLIENT_WG_IPV4_12/24,$CLIENT_WG_IPV6_12/64
+DNS = $CLIENT_DNS1,$CLIENT_DNS2" > "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_12.conf"
+
+# Add the server as a peer to the client
+echo "
+
+[Peer]
+PublicKey = $SERVER_PUB_KEY
+Endpoint = $ENDPOINT
+AllowedIPs = 0.0.0.0/0,::/0
+PersistentKeepalive = $KEEPALIVE
+$PSK12" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_12.conf"
 
 chmod 600 -R /etc/wireguard/
 
 # Enable routing on the server
+if [[ ! -f /etc/sysctl.d/wg.conf ]]; then
 echo "net.ipv4.ip_forward = 1
 net.ipv6.conf.all.forwarding = 1" > /etc/sysctl.d/wg.conf
-
-echo
-sysctl --system
+  echo
+  sysctl --system
+fi
 
 echo
 if [[ "$reset" = 'reset' ]]; then
@@ -604,99 +695,122 @@ echo "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_1.conf"
 echo
 cat "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_1.conf"
 echo
-echo "qrencode -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_1.conf"
+echo "qrencode -o $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_1.png -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_1.conf"
 echo
-qrencode -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_1.conf
+qrencode -o $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_1.png -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_1.conf
 echo
 echo "----------------------------------"
 echo "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_2.conf"
 echo
 cat "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_2.conf"
 echo
-echo "qrencode -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_2.conf"
+echo "qrencode -o $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_2.png -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_2.conf"
 echo
-qrencode -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_2.conf
+qrencode -o $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_2.png -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_2.conf
 echo
 echo "----------------------------------"
 echo "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_3.conf"
 echo
 cat "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_3.conf"
 echo
-echo "qrencode -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_3.conf"
+echo "qrencode -o $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_3.png -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_3.conf"
 echo
-qrencode -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_3.conf
+qrencode -o $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_3.png -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_3.conf
 echo
 echo "----------------------------------"
 echo "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_4.conf"
 echo
 cat "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_4.conf"
 echo
-echo "qrencode -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_4.conf"
+echo "qrencode -o $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_4.png -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_4.conf"
 echo
 echo "----------------------------------"
 echo "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_5.conf"
 echo
 cat "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_5.conf"
 echo
-echo "qrencode -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_5.conf"
+echo "qrencode -o $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_5.png -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_5.conf"
 echo
 echo "----------------------------------"
 echo "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_6.conf"
 echo
 cat "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_6.conf"
 echo
-echo "qrencode -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_6.conf"
+echo "qrencode -o $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_6.png -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_6.conf"
 echo
 echo "----------------------------------"
 echo "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_7.conf"
 echo
 cat "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_7.conf"
 echo
-echo "qrencode -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_7.conf"
+echo "qrencode -o $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_7.png -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_7.conf"
 echo
 echo "----------------------------------"
 echo "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_8.conf"
 echo
 cat "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_8.conf"
 echo
-echo "qrencode -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_8.conf"
+echo "qrencode -o $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_8.png -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_8.conf"
 echo
 echo "----------------------------------"
 echo "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_9.conf"
 echo
 cat "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_9.conf"
 echo
-echo "qrencode -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_9.conf"
+echo "qrencode -o $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_9.png -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_9.conf"
 echo
 echo "----------------------------------"
 echo "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_10.conf"
 echo
 cat "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_10.conf"
 echo
-echo "qrencode -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_10.conf"
+echo "qrencode -o $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_10.png -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_10.conf"
+echo
+echo "----------------------------------"
+echo "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_11.conf"
+echo
+cat "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_11.conf"
+echo
+echo "qrencode -o $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_11.png -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_11.conf"
+echo
+echo "----------------------------------"
+echo "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_12.conf"
+echo
+cat "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_12.conf"
+echo
+echo "qrencode -o $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_12.png -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_12.conf"
 echo
 echo "wg showconf $SERVER_WG_NIC"
 wg showconf $SERVER_WG_NIC
-echo 
-echo "firewalld setup"
 echo
-echo "firewall-cmd --permanent --add-rich-rule=\"rule family=ipv4 source address=$SERVER_WG_IPV4/24 masquerade\""
-firewall-cmd --permanent --add-rich-rule="rule family=ipv4 source address=$SERVER_WG_IPV4/24 masquerade"
-echo
-echo "firewall-cmd --permanent --add-rich-rule=\"rule family=ipv6 source address=$SERVER_WG_IPV6/64 masquerade\""
-firewall-cmd --permanent --add-rich-rule="rule family=ipv6 source address=$SERVER_WG_IPV6/64 masquerade"
-echo
-echo "firewall-cmd --permanent --direct --add-rule ipv4 filter FORWARD 0 -i $SERVER_WG_NIC -o $SERVER_PUB_NIC -j ACCEPT"
-firewall-cmd --permanent --direct --add-rule ipv4 filter FORWARD 0 -i $SERVER_WG_NIC -o $SERVER_PUB_NIC -j ACCEPT
-echo
-echo "firewall-cmd --permanent --direct --add-rule ipv6 filter FORWARD 0 -i $SERVER_WG_NIC -o $SERVER_PUB_NIC -j ACCEPT"
-firewall-cmd --permanent --direct --add-rule ipv6 filter FORWARD 0 -i $SERVER_WG_NIC -o $SERVER_PUB_NIC -j ACCEPT
-echo
-echo "firewall-cmd --reload"
-firewall-cmd --reload
+if [[ ! "$(firewall-cmd --zone=public --list-all 2>&1 | grep "rule family=\"ipv4\" source address=\"$SERVER_WG_IPV4")" ]]; then
+  echo "firewalld setup"
+  echo
+  echo "firewall-cmd --permanent --add-rich-rule=\"rule family=ipv4 source address=$SERVER_WG_IPV4/24 masquerade\""
+  firewall-cmd --permanent --add-rich-rule="rule family=ipv4 source address=$SERVER_WG_IPV4/24 masquerade"
+  echo
+  echo "firewall-cmd --permanent --add-rich-rule=\"rule family=ipv6 source address=$SERVER_WG_IPV6/64 masquerade\""
+  firewall-cmd --permanent --add-rich-rule="rule family=ipv6 source address=$SERVER_WG_IPV6/64 masquerade"
+  echo
+  echo "firewall-cmd --permanent --direct --add-rule ipv4 filter FORWARD 0 -i $SERVER_WG_NIC -o $SERVER_PUB_NIC -j ACCEPT"
+  firewall-cmd --permanent --direct --add-rule ipv4 filter FORWARD 0 -i $SERVER_WG_NIC -o $SERVER_PUB_NIC -j ACCEPT
+  echo
+  echo "firewall-cmd --permanent --direct --add-rule ipv6 filter FORWARD 0 -i $SERVER_WG_NIC -o $SERVER_PUB_NIC -j ACCEPT"
+  firewall-cmd --permanent --direct --add-rule ipv6 filter FORWARD 0 -i $SERVER_WG_NIC -o $SERVER_PUB_NIC -j ACCEPT
+  echo
+  echo "firewall-cmd --reload"
+  firewall-cmd --reload
+fi
 echo
 echo "firewall-cmd --permanent --list-rich-rules"
 firewall-cmd --permanent --list-rich-rules
+echo
+echo "WireGuard Server Setup Complete"
+echo
+echo "WireGuard Client Configurations Complete"
+echo "saved config & qrcodes at $CLIENT_CONFIGDIR"
+ls -lah "$CLIENT_CONFIGDIR" | grep "$SERVER_WG_NIC-client"
+echo
 }
 
 case "$1" in
