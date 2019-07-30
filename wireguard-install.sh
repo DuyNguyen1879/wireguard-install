@@ -807,6 +807,20 @@ if [[ ! "$(firewall-cmd --zone=public --list-all 2>&1 | grep "rule family=\"ipv4
   echo
   echo "firewall-cmd --permanent --add-rich-rule=\"rule family=ipv6 source address=$SERVER_WG_IPV6/64 masquerade\""
   firewall-cmd --permanent --add-rich-rule="rule family=ipv6 source address=$SERVER_WG_IPV6/64 masquerade"
+
+  # echo
+  # echo "firewall-cmd --zone=public --add-rich-rule=\"rule family=ipv4 source address=\"10.66.66.0/24\" forward-port port=53 protocol=tcp to-port=53 to-addr=\"127.0.0.1\"\" --permanent"
+  # firewall-cmd --zone=public --add-rich-rule="rule family=ipv4 source address="10.66.66.0/24" forward-port port=53 protocol=tcp to-port=53 to-addr="127.0.0.1"" --permanent
+  # echo
+  # echo "firewall-cmd --zone=public --add-rich-rule=\"rule family=ipv4 source address=\"10.66.66.0/24\" forward-port port=53 protocol=udp to-port=53 to-addr=\"127.0.0.1\"\" --permanent"
+  # firewall-cmd --zone=public --add-rich-rule="rule family=ipv4 source address="10.66.66.0/24" forward-port port=53 protocol=udp to-port=53 to-addr="127.0.0.1"" --permanent
+
+  # echo
+  # echo "firewall-cmd --zone=public --add-rich-rule=\"rule family=ipv4 source address=$SERVER_WG_IPV6/64 forward-port port=53 protocol=tcp to-port=53 to-addr="127.0.0.1"\" --permanent"
+  # firewall-cmd --zone=public --add-rich-rule="rule family=ipv4 source address=$SERVER_WG_IPV6/64 forward-port port=53 protocol=tcp to-port=53 to-addr="127.0.0.1"" --permanent
+  # echo
+  # echo "firewall-cmd --zone=public --add-rich-rule=\"rule family=ipv4 source address=\"10.66.66.0/24\" forward-port port=53 protocol=udp to-port=53 to-addr=\"127.0.0.1\"\" --permanent"
+  # firewall-cmd --zone=public --add-rich-rule="rule family=ipv4 source address="10.66.66.0/24" forward-port port=53 protocol=udp to-port=53 to-addr="127.0.0.1"" --permanent
   echo
   echo "firewall-cmd --permanent --direct --add-rule ipv4 filter FORWARD 0 -i $SERVER_WG_NIC -o $SERVER_PUB_NIC -j ACCEPT"
   firewall-cmd --permanent --direct --add-rule ipv4 filter FORWARD 0 -i $SERVER_WG_NIC -o $SERVER_PUB_NIC -j ACCEPT
@@ -820,6 +834,9 @@ fi
 echo
 echo "firewall-cmd --permanent --list-rich-rules"
 firewall-cmd --permanent --list-rich-rules
+echo
+echo "firewall-cmd --direct --get-all-rules"
+firewall-cmd --direct --get-all-rules
 echo
 echo "WireGuard Server Setup Complete"
 echo
