@@ -49,14 +49,21 @@ fi
 
 unbound() {
   reset=$1
-  echo
-  echo "setup unbound DNS resolver with DNS-over-TLS & DNSSEC"
-  echo 
   if [[ "$OS" = 'centos' ]]; then
     if [ ! -d /etc/unbound/conf.d ]; then
         yum -y install unbound
     fi
+  else
+    echo
+    echo "error: non-CentOS system detected"
+    echo "this forked version is optimised for CentOS only"
+    echo "for non-CentOS systems use original script"
+    echo "at https://github.com/angristan/wireguard-install"
+    exit 1
   fi
+  echo
+  echo "setup unbound DNS resolver with DNS-over-TLS & DNSSEC"
+  echo 
 cat > /etc/unbound/conf.d/wireguard.conf <<EOF
 server:
     access-control:  0.0.0.0/0       refuse
