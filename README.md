@@ -41,7 +41,7 @@ Then run `centos7-firewalld.sh` to pre-configure firewalld setup
 Then run `wireguard-install.sh` to install and configure Wireguard:
 
 ```sh
-./wireguard-install.sh
+./wireguard-install.sh install
 ```
 
 ## Unbound
