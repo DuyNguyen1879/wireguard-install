@@ -68,6 +68,11 @@ unbound() {
   echo 
 cat > /etc/unbound/conf.d/wireguard.conf <<EOF
 server:
+    num-threads: 4
+
+    #Enable logs
+    verbosity: 1
+
     access-control:  0.0.0.0/0       refuse
     access-control:  127.0.0.1       allow
     access-control:  10.66.66.0/24   allow
@@ -377,7 +382,9 @@ Address = $SERVER_WG_IPV4/24,$SERVER_WG_IPV6/64
 ListenPort = $SERVER_PORT
 PrivateKey = $SERVER_PRIV_KEY
 #PostUp = iptables -A FORWARD -o $SERVER_WG_NIC -j ACCEPT; ip6tables -A FORWARD -o $SERVER_WG_NIC -j ACCEPT; iptables -t nat -A POSTROUTING -o $SERVER_PUB_NIC -j MASQUERADE; ip6tables -t nat -A POSTROUTING -o $SERVER_PUB_NIC -j MASQUERADE
-#PostDown = iptables -D FORWARD -o $SERVER_WG_NIC -j ACCEPT; ip6tables -D FORWARD -o $SERVER_WG_NIC -j ACCEPT; iptables -t nat -D POSTROUTING -o $SERVER_PUB_NIC -j MASQUERADE; ip6tables -t nat -D POSTROUTING -o $SERVER_PUB_NIC -j MASQUERADE" > "/etc/wireguard/$SERVER_WG_NIC.conf"
+#PostDown = iptables -D FORWARD -o $SERVER_WG_NIC -j ACCEPT; ip6tables -D FORWARD -o $SERVER_WG_NIC -j ACCEPT; iptables -t nat -D POSTROUTING -o $SERVER_PUB_NIC -j MASQUERADE; ip6tables -t nat -D POSTROUTING -o $SERVER_PUB_NIC -j MASQUERADE
+#PostUP = iptables -A INPUT -s 10.66.66.0/24 -p tcp -m tcp --dport 53 -m conntrack --ctstate NEW -j ACCEPT; iptables -A INPUT -s 10.66.66.0/24 -p udp -m udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
+#PostDown = iptables -D INPUT -s 10.66.66.0/24 -p tcp -m tcp --dport 53 -m conntrack --ctstate NEW -j ACCEPT; iptables -D INPUT -s 10.66.66.0/24 -p udp -m udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT" > "/etc/wireguard/$SERVER_WG_NIC.conf"
 
 # Add client 1 to 10 as a peer to the server
 echo "
