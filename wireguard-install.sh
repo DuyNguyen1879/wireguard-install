@@ -9,6 +9,8 @@ CLIENT_CONFIGDIR='/etc/wireguard/client-configs'
 # IPv4/IPv6 internal IP addresses assigned to each client if set to = n
 CLIENTIP_PROMPT='n'
 KEEPALIVE='25'
+# Use unbound for wireguard DNS
+UNBOUND_DNS='n'
 
 # Make sure the directory exists (this does not seem the be the case on fedora)
 mkdir -p "$CLIENT_CONFIGDIR" > /dev/null 2>&1
@@ -87,6 +89,8 @@ server:
 
     cache-min-ttl: 1800
     cache-max-ttl: 14400
+    prefetch: yes
+    prefetch-key: yes
 EOF
 cat > /etc/unbound/conf.d/wireguard-forward.conf <<EOF
 server:                                                                                       
@@ -234,23 +238,28 @@ if [[ "$CLIENTIP_PROMPT" = [yY] ]]; then
   read -rp "Client 12 WireGuard IPv6 " -e -i "$CLIENT_WG_IPV6_12" CLIENT_WG_IPV6_12
 fi
 
-# Adguard DNS by default
-# 176.103.130.130
-# Cloudflare
-# 1.1.1.1
-# Unbound
-# 10.66.66.1
-CLIENT_DNS1="176.103.130.130"
-#CLIENT_DNS1="1.1.1.1"
-read -rp "First DNS resolver to use for the client: " -e -i "$CLIENT_DNS1" CLIENT_DNS1
+if [[ "$UNBOUND_DNS" = [yY] ]]; then
+  CLIENTDNS="$SERVER_WG_IPV4"
+else
+  # Adguard DNS by default
+  # 176.103.130.130
+  # Cloudflare
+  # 1.1.1.1
+  # Unbound
+  # 10.66.66.1
+  CLIENT_DNS1="176.103.130.130"
+  #CLIENT_DNS1="1.1.1.1"
+  read -rp "First DNS resolver to use for the client: " -e -i "$CLIENT_DNS1" CLIENT_DNS1
 
-# Adguard DNS by default
-# 176.103.130.131
-# Cloudflare
-# 1.0.0.1
-CLIENT_DNS2="176.103.130.131"
-#CLIENT_DNS2="1.0.0.1"
-read -rp "Second DNS resolver to use for the client: " -e -i "$CLIENT_DNS2" CLIENT_DNS2
+  # Adguard DNS by default
+  # 176.103.130.131
+  # Cloudflare
+  # 1.0.0.1
+  CLIENT_DNS2="176.103.130.131"
+  #CLIENT_DNS2="1.0.0.1"
+  read -rp "Second DNS resolver to use for the client: " -e -i "$CLIENT_DNS2" CLIENT_DNS2
+  CLIENTDNS="$CLIENT_DNS1,$CLIENT_DNS2"
+fi
 
 # Ask for pre-shared symmetric key
 IS_PRE_SYMM="y"
@@ -439,7 +448,7 @@ $PSK12" >> "/etc/wireguard/$SERVER_WG_NIC.conf"
 echo "[Interface]
 PrivateKey = $CLIENT_PRIV_KEY1
 Address = $CLIENT_WG_IPV4_1/24,$CLIENT_WG_IPV6_1/64
-DNS = $CLIENT_DNS1,$CLIENT_DNS2" > "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_1.conf"
+DNS = $CLIENTDNS" > "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_1.conf"
 
 # Add the server as a peer to the client
 echo "
@@ -457,7 +466,7 @@ $PSK1" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_1.conf"
 echo "[Interface]
 PrivateKey = $CLIENT_PRIV_KEY2
 Address = $CLIENT_WG_IPV4_2/24,$CLIENT_WG_IPV6_2/64
-DNS = $CLIENT_DNS1,$CLIENT_DNS2" > "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_2.conf"
+DNS = $CLIENTDNS" > "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_2.conf"
 
 # Add the server as a peer to the client
 echo "
@@ -475,7 +484,7 @@ $PSK2" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_2.conf"
 echo "[Interface]
 PrivateKey = $CLIENT_PRIV_KEY3
 Address = $CLIENT_WG_IPV4_3/24,$CLIENT_WG_IPV6_3/64
-DNS = $CLIENT_DNS1,$CLIENT_DNS2" > "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_3.conf"
+DNS = $CLIENTDNS" > "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_3.conf"
 
 # Add the server as a peer to the client
 echo "
@@ -493,7 +502,7 @@ $PSK3" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_3.conf"
 echo "[Interface]
 PrivateKey = $CLIENT_PRIV_KEY4
 Address = $CLIENT_WG_IPV4_4/24,$CLIENT_WG_IPV6_4/64
-DNS = $CLIENT_DNS1,$CLIENT_DNS2" > "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_4.conf"
+DNS = $CLIENTDNS" > "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_4.conf"
 
 # Add the server as a peer to the client
 echo "
@@ -511,7 +520,7 @@ $PSK4" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_4.conf"
 echo "[Interface]
 PrivateKey = $CLIENT_PRIV_KEY5
 Address = $CLIENT_WG_IPV4_5/24,$CLIENT_WG_IPV6_5/64
-DNS = $CLIENT_DNS1,$CLIENT_DNS2" > "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_5.conf"
+DNS = $CLIENTDNS" > "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_5.conf"
 
 # Add the server as a peer to the client
 echo "
@@ -529,7 +538,7 @@ $PSK5" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_5.conf"
 echo "[Interface]
 PrivateKey = $CLIENT_PRIV_KEY6
 Address = $CLIENT_WG_IPV4_6/24,$CLIENT_WG_IPV6_6/64
-DNS = $CLIENT_DNS1,$CLIENT_DNS2" > "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_6.conf"
+DNS = $CLIENTDNS" > "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_6.conf"
 
 # Add the server as a peer to the client
 echo "
@@ -547,7 +556,7 @@ $PSK6" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_6.conf"
 echo "[Interface]
 PrivateKey = $CLIENT_PRIV_KEY7
 Address = $CLIENT_WG_IPV4_7/24,$CLIENT_WG_IPV6_7/64
-DNS = $CLIENT_DNS1,$CLIENT_DNS2" > "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_7.conf"
+DNS = $CLIENTDNS" > "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_7.conf"
 
 # Add the server as a peer to the client
 echo "
@@ -565,7 +574,7 @@ $PSK7" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_7.conf"
 echo "[Interface]
 PrivateKey = $CLIENT_PRIV_KEY8
 Address = $CLIENT_WG_IPV4_8/24,$CLIENT_WG_IPV6_8/64
-DNS = $CLIENT_DNS1,$CLIENT_DNS2" > "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_8.conf"
+DNS = $CLIENTDNS" > "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_8.conf"
 
 # Add the server as a peer to the client
 echo "
@@ -583,7 +592,7 @@ $PSK8" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_8.conf"
 echo "[Interface]
 PrivateKey = $CLIENT_PRIV_KEY9
 Address = $CLIENT_WG_IPV4_9/24,$CLIENT_WG_IPV6_9/64
-DNS = $CLIENT_DNS1,$CLIENT_DNS2" > "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_9.conf"
+DNS = $CLIENTDNS" > "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_9.conf"
 
 # Add the server as a peer to the client
 echo "
@@ -601,7 +610,7 @@ $PSK9" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_9.conf"
 echo "[Interface]
 PrivateKey = $CLIENT_PRIV_KEY10
 Address = $CLIENT_WG_IPV4_10/24,$CLIENT_WG_IPV6_10/64
-DNS = $CLIENT_DNS1,$CLIENT_DNS2" > "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_10.conf"
+DNS = $CLIENTDNS" > "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_10.conf"
 
 # Add the server as a peer to the client
 echo "
@@ -619,7 +628,7 @@ $PSK10" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_10.conf"
 echo "[Interface]
 PrivateKey = $CLIENT_PRIV_KEY11
 Address = $CLIENT_WG_IPV4_11/24,$CLIENT_WG_IPV6_11/64
-DNS = $CLIENT_DNS1,$CLIENT_DNS2" > "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_11.conf"
+DNS = $CLIENTDNS" > "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_11.conf"
 
 # Add the server as a peer to the client
 echo "
@@ -637,7 +646,7 @@ $PSK11" >> "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_11.conf"
 echo "[Interface]
 PrivateKey = $CLIENT_PRIV_KEY12
 Address = $CLIENT_WG_IPV4_12/24,$CLIENT_WG_IPV6_12/64
-DNS = $CLIENT_DNS1,$CLIENT_DNS2" > "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_12.conf"
+DNS = $CLIENTDNS" > "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_12.conf"
 
 # Add the server as a peer to the client
 echo "
