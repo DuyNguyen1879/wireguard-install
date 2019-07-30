@@ -724,12 +724,16 @@ cat "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_4.conf"
 echo
 echo "qrencode -o $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_4.png -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_4.conf"
 echo
+qrencode -o $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_4.png -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_4.conf
+echo
 echo "----------------------------------"
 echo "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_5.conf"
 echo
 cat "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_5.conf"
 echo
 echo "qrencode -o $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_5.png -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_5.conf"
+echo
+qrencode -o $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_5.png -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_5.conf
 echo
 echo "----------------------------------"
 echo "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_6.conf"
@@ -738,12 +742,16 @@ cat "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_6.conf"
 echo
 echo "qrencode -o $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_6.png -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_6.conf"
 echo
+qrencode -o $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_6.png -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_6.conf
+echo
 echo "----------------------------------"
 echo "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_7.conf"
 echo
 cat "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_7.conf"
 echo
 echo "qrencode -o $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_7.png -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_7.conf"
+echo
+qrencode -o $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_7.png -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_7.conf
 echo
 echo "----------------------------------"
 echo "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_8.conf"
@@ -752,12 +760,16 @@ cat "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_8.conf"
 echo
 echo "qrencode -o $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_8.png -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_8.conf"
 echo
+qrencode -o $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_8.png -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_8.conf
+echo
 echo "----------------------------------"
 echo "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_9.conf"
 echo
 cat "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_9.conf"
 echo
 echo "qrencode -o $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_9.png -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_9.conf"
+echo
+qrencode -o $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_9.png -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_9.conf
 echo
 echo "----------------------------------"
 echo "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_10.conf"
@@ -766,6 +778,8 @@ cat "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_10.conf"
 echo
 echo "qrencode -o $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_10.png -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_10.conf"
 echo
+qrencode -o $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_10.png -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_10.conf
+echo
 echo "----------------------------------"
 echo "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_11.conf"
 echo
@@ -773,12 +787,16 @@ cat "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_11.conf"
 echo
 echo "qrencode -o $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_11.png -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_11.conf"
 echo
+qrencode -o $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_11.png -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_11.conf
+echo
 echo "----------------------------------"
 echo "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_12.conf"
 echo
 cat "$CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_12.conf"
 echo
 echo "qrencode -o $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_12.png -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_12.conf"
+echo
+qrencode -o $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_12.png -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_12.conf
 echo
 echo "wg showconf $SERVER_WG_NIC"
 wg showconf $SERVER_WG_NIC
@@ -811,6 +829,41 @@ echo "WireGuard Client Configurations Complete"
 echo "saved config & qrcodes at $CLIENT_CONFIGDIR"
 ls -lah "$CLIENT_CONFIGDIR" | grep "$SERVER_WG_NIC-client"
 echo
+echo "Client 1 qrcode"
+qrencode -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_1.conf
+echo
+echo "Client 2 qrcode"
+qrencode -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_2.conf
+echo
+echo "Client 3 qrcode"
+qrencode -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_3.conf
+echo
+echo "Client 4 qrcode"
+qrencode -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_4.conf
+echo
+echo "Client 5 qrcode"
+qrencode -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_5.conf
+echo
+echo "Client 6 qrcode"
+qrencode -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_6.conf
+echo
+echo "Client 7 qrcode"
+qrencode -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_7.conf
+echo
+echo "Client 8 qrcode"
+qrencode -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_8.conf
+echo
+echo "Client 9 qrcode"
+qrencode -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_9.conf
+echo
+echo "Client 10 qrcode"
+qrencode -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_10.conf
+echo
+echo "Client 11 qrcode"
+qrencode -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_11.conf
+echo
+echo "Client 12 qrcode"
+qrencode -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_12.conf
 }
 
 case "$1" in
