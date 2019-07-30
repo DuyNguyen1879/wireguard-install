@@ -5,6 +5,9 @@
 # https://angristan.xyz/how-to-setup-vpn-server-wireguard-nat-ipv6/
 ###########################################################################
 CLIENT_CONFIGDIR='/etc/wireguard/client-configs'
+# CLIENTIP_PROMPT will disable interactive prompt to confirm the preset
+# IPv4/IPv6 internal IP addresses assigned to each client if set to = n
+CLIENTIP_PROMPT='n'
 KEEPALIVE='25'
 
 # Make sure the directory exists (this does not seem the be the case on fedora)
@@ -125,6 +128,9 @@ EOF
 
 wg_setup() {
   reset=$1
+  echo
+  echo "Setup WireGuard server & client configurations"
+  echo
 
 # Detect public IPv4 address and pre-fill for the user
 SERVER_PUB_IPV4=$(ip addr | grep 'inet' | grep -v inet6 | grep -vE '127\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | head -1)
@@ -147,100 +153,79 @@ SERVER_PORT=51821
 read -rp "Server's WireGuard port " -e -i "$SERVER_PORT" SERVER_PORT
 
 # 1st client
-
 CLIENT_WG_IPV4_1="10.66.66.2"
-read -rp "Client 1 WireGuard IPv4 " -e -i "$CLIENT_WG_IPV4_1" CLIENT_WG_IPV4_1
-
 CLIENT_WG_IPV6_1="fd42:42:42::2"
-read -rp "Client 1 WireGuard IPv6 " -e -i "$CLIENT_WG_IPV6_1" CLIENT_WG_IPV6_1
 
 # 2nd client
-
 CLIENT_WG_IPV4_2="10.66.66.3"
-read -rp "Client 2 WireGuard IPv4 " -e -i "$CLIENT_WG_IPV4_2" CLIENT_WG_IPV4_2
-
 CLIENT_WG_IPV6_2="fd42:42:42::3"
-read -rp "Client 2 WireGuard IPv6 " -e -i "$CLIENT_WG_IPV6_2" CLIENT_WG_IPV6_2
 
 # 3rd client
-
 CLIENT_WG_IPV4_3="10.66.66.4"
-read -rp "Client 3 WireGuard IPv4 " -e -i "$CLIENT_WG_IPV4_3" CLIENT_WG_IPV4_3
-
 CLIENT_WG_IPV6_3="fd42:42:42::4"
-read -rp "Client 3 WireGuard IPv6 " -e -i "$CLIENT_WG_IPV6_3" CLIENT_WG_IPV6_3
 
 # 4th client
-
 CLIENT_WG_IPV4_4="10.66.66.5"
-read -rp "Client 4 WireGuard IPv4 " -e -i "$CLIENT_WG_IPV4_4" CLIENT_WG_IPV4_4
-
 CLIENT_WG_IPV6_4="fd42:42:42::5"
-read -rp "Client 4 WireGuard IPv6 " -e -i "$CLIENT_WG_IPV6_4" CLIENT_WG_IPV6_4
 
 # 5th client
-
 CLIENT_WG_IPV4_5="10.66.66.6"
-read -rp "Client 5 WireGuard IPv4 " -e -i "$CLIENT_WG_IPV4_5" CLIENT_WG_IPV4_5
-
 CLIENT_WG_IPV6_5="fd42:42:42::6"
-read -rp "Client 5 WireGuard IPv6 " -e -i "$CLIENT_WG_IPV6_5" CLIENT_WG_IPV6_5
 
 # 6th client
-
 CLIENT_WG_IPV4_6="10.66.66.7"
-read -rp "Client 6 WireGuard IPv4 " -e -i "$CLIENT_WG_IPV4_6" CLIENT_WG_IPV4_6
-
 CLIENT_WG_IPV6_6="fd42:42:42::7"
-read -rp "Client 6 WireGuard IPv6 " -e -i "$CLIENT_WG_IPV6_6" CLIENT_WG_IPV6_6
 
 # 7th client
-
 CLIENT_WG_IPV4_7="10.66.66.8"
-read -rp "Client 7 WireGuard IPv4 " -e -i "$CLIENT_WG_IPV4_7" CLIENT_WG_IPV4_7
-
 CLIENT_WG_IPV6_7="fd42:42:42::8"
-read -rp "Client 7 WireGuard IPv6 " -e -i "$CLIENT_WG_IPV6_7" CLIENT_WG_IPV6_7
 
 # 8th client
-
 CLIENT_WG_IPV4_8="10.66.66.9"
-read -rp "Client 8 WireGuard IPv4 " -e -i "$CLIENT_WG_IPV4_8" CLIENT_WG_IPV4_8
-
 CLIENT_WG_IPV6_8="fd42:42:42::9"
-read -rp "Client 8 WireGuard IPv6 " -e -i "$CLIENT_WG_IPV6_8" CLIENT_WG_IPV6_8
 
 # 9th client
-
 CLIENT_WG_IPV4_9="10.66.66.10"
-read -rp "Client 9 WireGuard IPv4 " -e -i "$CLIENT_WG_IPV4_9" CLIENT_WG_IPV4_9
-
 CLIENT_WG_IPV6_9="fd42:42:42::10"
-read -rp "Client 9 WireGuard IPv6 " -e -i "$CLIENT_WG_IPV6_9" CLIENT_WG_IPV6_9
 
 # 10th client
-
 CLIENT_WG_IPV4_10="10.66.66.11"
-read -rp "Client 10 WireGuard IPv4 " -e -i "$CLIENT_WG_IPV4_10" CLIENT_WG_IPV4_10
-
 CLIENT_WG_IPV6_10="fd42:42:42::11"
-read -rp "Client 10 WireGuard IPv6 " -e -i "$CLIENT_WG_IPV6_10" CLIENT_WG_IPV6_10
 
 # 11th client
-
 CLIENT_WG_IPV4_11="10.66.66.12"
-read -rp "Client 11 WireGuard IPv4 " -e -i "$CLIENT_WG_IPV4_11" CLIENT_WG_IPV4_11
-
 CLIENT_WG_IPV6_11="fd42:42:42::12"
-read -rp "Client 11 WireGuard IPv6 " -e -i "$CLIENT_WG_IPV6_11" CLIENT_WG_IPV6_11
 
 # 12th client
-
 CLIENT_WG_IPV4_12="10.66.66.13"
-read -rp "Client 12 WireGuard IPv4 " -e -i "$CLIENT_WG_IPV4_12" CLIENT_WG_IPV4_12
-
 CLIENT_WG_IPV6_12="fd42:42:42::13"
-read -rp "Client 12 WireGuard IPv6 " -e -i "$CLIENT_WG_IPV6_12" CLIENT_WG_IPV6_12
+
+if [[ "$CLIENTIP_PROMPT" = [yY] ]]; then
+  read -rp "Client 1 WireGuard IPv4 " -e -i "$CLIENT_WG_IPV4_1" CLIENT_WG_IPV4_1
+  read -rp "Client 1 WireGuard IPv6 " -e -i "$CLIENT_WG_IPV6_1" CLIENT_WG_IPV6_1
+  read -rp "Client 2 WireGuard IPv4 " -e -i "$CLIENT_WG_IPV4_2" CLIENT_WG_IPV4_2
+  read -rp "Client 2 WireGuard IPv6 " -e -i "$CLIENT_WG_IPV6_2" CLIENT_WG_IPV6_2
+  read -rp "Client 3 WireGuard IPv4 " -e -i "$CLIENT_WG_IPV4_3" CLIENT_WG_IPV4_3
+  read -rp "Client 3 WireGuard IPv6 " -e -i "$CLIENT_WG_IPV6_3" CLIENT_WG_IPV6_3
+  read -rp "Client 4 WireGuard IPv4 " -e -i "$CLIENT_WG_IPV4_4" CLIENT_WG_IPV4_4
+  read -rp "Client 4 WireGuard IPv6 " -e -i "$CLIENT_WG_IPV6_4" CLIENT_WG_IPV6_4
+  read -rp "Client 5 WireGuard IPv4 " -e -i "$CLIENT_WG_IPV4_5" CLIENT_WG_IPV4_5
+  read -rp "Client 5 WireGuard IPv6 " -e -i "$CLIENT_WG_IPV6_5" CLIENT_WG_IPV6_5
+  read -rp "Client 6 WireGuard IPv4 " -e -i "$CLIENT_WG_IPV4_6" CLIENT_WG_IPV4_6
+  read -rp "Client 6 WireGuard IPv6 " -e -i "$CLIENT_WG_IPV6_6" CLIENT_WG_IPV6_6
+  read -rp "Client 7 WireGuard IPv4 " -e -i "$CLIENT_WG_IPV4_7" CLIENT_WG_IPV4_7
+  read -rp "Client 7 WireGuard IPv6 " -e -i "$CLIENT_WG_IPV6_7" CLIENT_WG_IPV6_7
+  read -rp "Client 8 WireGuard IPv4 " -e -i "$CLIENT_WG_IPV4_8" CLIENT_WG_IPV4_8
+  read -rp "Client 8 WireGuard IPv6 " -e -i "$CLIENT_WG_IPV6_8" CLIENT_WG_IPV6_8
+  read -rp "Client 9 WireGuard IPv4 " -e -i "$CLIENT_WG_IPV4_9" CLIENT_WG_IPV4_9
+  read -rp "Client 9 WireGuard IPv6 " -e -i "$CLIENT_WG_IPV6_9" CLIENT_WG_IPV6_9
+  read -rp "Client 10 WireGuard IPv4 " -e -i "$CLIENT_WG_IPV4_10" CLIENT_WG_IPV4_10
+  read -rp "Client 10 WireGuard IPv6 " -e -i "$CLIENT_WG_IPV6_10" CLIENT_WG_IPV6_10
+  read -rp "Client 11 WireGuard IPv4 " -e -i "$CLIENT_WG_IPV4_11" CLIENT_WG_IPV4_11
+  read -rp "Client 11 WireGuard IPv6 " -e -i "$CLIENT_WG_IPV6_11" CLIENT_WG_IPV6_11
+  read -rp "Client 12 WireGuard IPv4 " -e -i "$CLIENT_WG_IPV4_12" CLIENT_WG_IPV4_12
+  read -rp "Client 12 WireGuard IPv6 " -e -i "$CLIENT_WG_IPV6_12" CLIENT_WG_IPV6_12
+fi
 
 # Adguard DNS by default
 # 176.103.130.130
@@ -798,9 +783,6 @@ echo "qrencode -o $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_12.png -t ansiutf8 < $
 echo
 qrencode -o $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_12.png -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_12.conf
 echo
-echo "wg showconf $SERVER_WG_NIC"
-wg showconf $SERVER_WG_NIC
-echo
 if [[ ! "$(firewall-cmd --zone=public --list-all 2>&1 | grep "rule family=\"ipv4\" source address=\"$SERVER_WG_IPV4")" ]]; then
   echo "firewalld setup"
   echo
@@ -864,6 +846,9 @@ qrencode -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_11.conf
 echo
 echo "Client 12 qrcode"
 qrencode -t ansiutf8 < $CLIENT_CONFIGDIR/$SERVER_WG_NIC-client_12.conf
+echo
+echo "wg showconf $SERVER_WG_NIC"
+wg showconf $SERVER_WG_NIC
 }
 
 case "$1" in
