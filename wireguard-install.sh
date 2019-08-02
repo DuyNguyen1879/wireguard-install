@@ -142,6 +142,33 @@ EOF
   echo 
 }
 
+haveged_setup() {
+if [[ -d /usr/lib/systemd/system/ && ! -f /usr/lib/systemd/system/haveged.service ]]; then
+  echo
+  echo "Increase system Entropy pool availability"
+  echo
+  # cat /proc/sys/kernel/random/entropy_avail
+  if [[ $(rpm -q haveged >/dev/null 2>&1; echo $?) != '0' ]]; then
+    yum -y install haveged rng-tools
+  fi
+
+  if [[ ! -d /etc/systemd/system/haveged.service.d || ! -f /etc/systemd/system/haveged.service.d/haveged.conf ]]; then
+    mkdir -p /etc/systemd/system/haveged.service.d
+cat > "/etc/systemd/system/haveged.service.d/haveged.conf" <<EFF
+[Service]
+ExecStart=
+ExecStart=/usr/sbin/haveged -w 4067 -v 1 --Foreground
+EFF
+    systemctl daemon-reload
+    systemctl enable haveged
+    systemctl restart haveged
+    echo
+    cat /etc/systemd/system/haveged.service.d/haveged.conf
+    echo
+  fi
+fi
+}
+
 wg_setup() {
   reset=$1
   echo
@@ -159,6 +186,7 @@ read -rp "Public interface: " -e -i "$SERVER_PUB_NIC" SERVER_PUB_NIC
 SERVER_WG_NIC="wg0"
 read -rp "WireGuard interface name: " -e -i "$SERVER_WG_NIC" SERVER_WG_NIC
 
+PRIVATE_SUBNET_V4='10.66.66.0/24'
 SERVER_WG_IPV4="10.66.66.1"
 read -rp "Server's WireGuard IPv4 " -e -i "$SERVER_WG_IPV4" SERVER_WG_IPV4
 
@@ -383,8 +411,9 @@ ListenPort = $SERVER_PORT
 PrivateKey = $SERVER_PRIV_KEY
 #PostUp = iptables -A FORWARD -o $SERVER_WG_NIC -j ACCEPT; ip6tables -A FORWARD -o $SERVER_WG_NIC -j ACCEPT; iptables -t nat -A POSTROUTING -o $SERVER_PUB_NIC -j MASQUERADE; ip6tables -t nat -A POSTROUTING -o $SERVER_PUB_NIC -j MASQUERADE
 #PostDown = iptables -D FORWARD -o $SERVER_WG_NIC -j ACCEPT; ip6tables -D FORWARD -o $SERVER_WG_NIC -j ACCEPT; iptables -t nat -D POSTROUTING -o $SERVER_PUB_NIC -j MASQUERADE; ip6tables -t nat -D POSTROUTING -o $SERVER_PUB_NIC -j MASQUERADE
-#PostUP = iptables -A INPUT -s 10.66.66.0/24 -p tcp -m tcp --dport 53 -m conntrack --ctstate NEW -j ACCEPT; iptables -A INPUT -s 10.66.66.0/24 -p udp -m udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
-#PostDown = iptables -D INPUT -s 10.66.66.0/24 -p tcp -m tcp --dport 53 -m conntrack --ctstate NEW -j ACCEPT; iptables -D INPUT -s 10.66.66.0/24 -p udp -m udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT" > "/etc/wireguard/$SERVER_WG_NIC.conf"
+PostUp = iptables -A FORWARD -i $SERVER_WG_NIC -j ACCEPT; iptables -t nat -A POSTROUTING -o $SERVER_PUB_NIC -j MASQUERADE; ip6tables -A FORWARD -i $SERVER_WG_NIC -j ACCEPT; ip6tables -t nat -A POSTROUTING -o $SERVER_PUB_NIC -j MASQUERADE; iptables -A INPUT -s $PRIVATE_SUBNET_V4 -p udp -m udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
+PostDown = iptables -A FORWARD -i $SERVER_WG_NIC -j ACCEPT; iptables -t nat -A POSTROUTING -o $SERVER_PUB_NIC -j MASQUERADE; ip6tables -A FORWARD -i $SERVER_WG_NIC -j ACCEPT; ip6tables -t nat -A POSTROUTING -o $SERVER_PUB_NIC -j MASQUERADE; iptables -A INPUT -s $PRIVATE_SUBNET_V4 -p udp -m udp --dport 53 -m conntrack --ctstate NEW -j ACCEPT
+" > "/etc/wireguard/$SERVER_WG_NIC.conf"
 
 # Add client 1 to 10 as a peer to the server
 echo "
@@ -894,6 +923,7 @@ wg showconf $SERVER_WG_NIC
 case "$1" in
   install )
     unbound
+    haveged_setup
     wg_setup
     ;;
   reset )
