@@ -51,6 +51,7 @@ fi
 
 unbound() {
   reset=$1
+  mode=$2
   if [[ "$OS" = 'centos' ]]; then
     if [ ! -d /etc/unbound/conf.d ]; then
         yum -y install unbound
@@ -171,30 +172,45 @@ fi
 
 wg_setup() {
   reset=$1
+  mode=$2
   echo
   echo "Setup WireGuard server & client configurations"
   echo
 
 # Detect public IPv4 address and pre-fill for the user
 SERVER_PUB_IPV4=$(ip addr | grep 'inet' | grep -v inet6 | grep -vE '127\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | grep -oE '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | head -1)
-read -rp "IPv4 or IPv6 public address: " -e -i "$SERVER_PUB_IPV4" SERVER_PUB_IP
+if [[ "$mode" != 'auto' ]]; then
+  read -rp "IPv4 or IPv6 public address: " -e -i "$SERVER_PUB_IPV4" SERVER_PUB_IP
+elif [[ "$mode" = 'auto' ]]; then
+  SERVER_PUB_IP=$SERVER_PUB_IPV4
+fi
 
 # Detect public interface and pre-fill for the user
 SERVER_PUB_NIC="$(ip -4 route ls | grep default | grep -Po '(?<=dev )(\S+)' | head -1)"
-read -rp "Public interface: " -e -i "$SERVER_PUB_NIC" SERVER_PUB_NIC
+if [[ "$mode" != 'auto' ]]; then
+  read -rp "Public interface: " -e -i "$SERVER_PUB_NIC" SERVER_PUB_NIC
+fi
 
 SERVER_WG_NIC="wg0"
-read -rp "WireGuard interface name: " -e -i "$SERVER_WG_NIC" SERVER_WG_NIC
+if [[ "$mode" != 'auto' ]]; then
+  read -rp "WireGuard interface name: " -e -i "$SERVER_WG_NIC" SERVER_WG_NIC
+fi
 
 PRIVATE_SUBNET_V4='10.66.66.0/24'
 SERVER_WG_IPV4="10.66.66.1"
-read -rp "Server's WireGuard IPv4 " -e -i "$SERVER_WG_IPV4" SERVER_WG_IPV4
+if [[ "$mode" != 'auto' ]]; then
+  read -rp "Server's WireGuard IPv4 " -e -i "$SERVER_WG_IPV4" SERVER_WG_IPV4
+fi
 
 SERVER_WG_IPV6="fd42:42:42::1"
-read -rp "Server's WireGuard IPv6 " -e -i "$SERVER_WG_IPV6" SERVER_WG_IPV6
+if [[ "$mode" != 'auto' ]]; then
+  read -rp "Server's WireGuard IPv6 " -e -i "$SERVER_WG_IPV6" SERVER_WG_IPV6
+fi
 
 SERVER_PORT=51821
-read -rp "Server's WireGuard port " -e -i "$SERVER_PORT" SERVER_PORT
+if [[ "$mode" != 'auto' ]]; then
+  read -rp "Server's WireGuard port " -e -i "$SERVER_PORT" SERVER_PORT
+fi
 
 # 1st client
 CLIENT_WG_IPV4_1="10.66.66.2"
@@ -282,7 +298,9 @@ else
   # 10.66.66.1
   CLIENT_DNS1="176.103.130.130"
   #CLIENT_DNS1="1.1.1.1"
-  read -rp "First DNS resolver to use for the client: " -e -i "$CLIENT_DNS1" CLIENT_DNS1
+  if [[ "$mode" != 'auto' ]]; then
+    read -rp "First DNS resolver to use for the client: " -e -i "$CLIENT_DNS1" CLIENT_DNS1
+  fi
 
   # Adguard DNS by default
   # 176.103.130.131
@@ -290,13 +308,17 @@ else
   # 1.0.0.1
   CLIENT_DNS2="176.103.130.131"
   #CLIENT_DNS2="1.0.0.1"
-  read -rp "Second DNS resolver to use for the client: " -e -i "$CLIENT_DNS2" CLIENT_DNS2
+  if [[ "$mode" != 'auto' ]]; then
+    read -rp "Second DNS resolver to use for the client: " -e -i "$CLIENT_DNS2" CLIENT_DNS2
+  fi
   CLIENTDNS="$CLIENT_DNS1,$CLIENT_DNS2"
 fi
 
 # Ask for pre-shared symmetric key
 IS_PRE_SYMM="y"
-read -rp "Want to use pre-shared symmetric key? [Y/n]: " -e -i "$IS_PRE_SYMM" IS_PRE_SYMM
+if [[ "$mode" != 'auto' ]]; then
+  read -rp "Want to use pre-shared symmetric key? [Y/n]: " -e -i "$IS_PRE_SYMM" IS_PRE_SYMM
+fi
 
 if [[ $SERVER_PUB_IP =~ .*:.* ]]
 then
@@ -930,6 +952,15 @@ case "$1" in
     unbound reset
     wg_setup reset
     ;;
+  install-auto )
+    unbound
+    haveged_setup
+    wg_setup auto
+    ;;
+  reset-auto )
+    unbound reset
+    wg_setup reset auto
+    ;;
   check )
     echo
     echo "tcpdump -i $SERVER_WG_NIC"
@@ -940,6 +971,9 @@ case "$1" in
     echo
     echo "Usage:"
     echo
-    echo "$0 {install|reset}"
+    echo "$0 install"
+    echo "$0 install-auto"
+    echo "$0 reset"
+    echo "$0 reset-auto"
     ;;
 esac
